@@ -1,10 +1,11 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import yfinance as yf
 import pandas as pd
 import os
 
 app = Flask(__name__)
-
+CORS(app)
 # ✅ 50 Indian and 50 US Stocks → 100 total
 STOCKS = {
     "INDIA": [
