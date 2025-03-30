@@ -1,10 +1,11 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import yfinance as yf
 import pandas as pd
 import os
 
 app = Flask(__name__)
-
+CORS(app)
 # ✅ List of 50 Indian Stocks (NSE symbols)
 INDIAN_STOCKS = [
     "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
