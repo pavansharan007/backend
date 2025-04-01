@@ -1,11 +1,17 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_caching import Cache
 import yfinance as yf
 import pandas as pd
 import os
 
 app = Flask(__name__)
 CORS(app)
+
+# Configure cache
+app.config['CACHE_TYPE'] = 'SimpleCache'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # Cache for 5 minutes
+cache = Cache(app)
 
 # ✅ List of 100 Stocks (Indian + US)
 STOCKS = [
@@ -26,7 +32,8 @@ STOCKS = [
     "IBM", "GE", "F", "T", "GM", "CAT", "LMT", "MMM", "CVX", "CSCO"
 ]
 
-# ✅ Function to fetch real-time stock data
+# ✅ Function to fetch real-time stock data with caching
+@cache.cached(timeout=300, key_prefix='stock_data')
 def fetch_stock_data(symbol):
     try:
         stock = yf.Ticker(symbol)
@@ -58,7 +65,7 @@ def fetch_stock_data(symbol):
         print(f"Error fetching {symbol}: {e}")
         return None
 
-# ✅ Function to rank stocks
+# ✅ Function to rank stocks based on various criteria
 def rank_stocks():
     stock_data = [fetch_stock_data(symbol) for symbol in STOCKS]
     stock_data = [data for data in stock_data if data]
@@ -88,7 +95,7 @@ def rank_stocks():
     ranked_stocks = df.to_dict(orient='records')
     return ranked_stocks
 
-# ✅ API endpoint
+# ✅ API endpoint to get ranked stocks
 @app.route('/stocks', methods=['GET'])
 def get_stocks():
     ranked_stocks = rank_stocks()
