@@ -17,19 +17,10 @@ cache = Cache(app)
 STOCKS = [
     "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
     "KOTAKBANK.NS", "HINDUNILVR.NS", "LT.NS", "BAJFINANCE.NS", "ITC.NS",
-    "ASIANPAINT.NS", "SUNPHARMA.NS", "HCLTECH.NS", "WIPRO.NS", "MARUTI.NS",
-    "ULTRACEMCO.NS", "ONGC.NS", "NTPC.NS", "POWERGRID.NS", "BHARTIARTL.NS",
-    "SBIN.NS", "GRASIM.NS", "TITAN.NS", "HINDALCO.NS", "JSWSTEEL.NS",
-    "COALINDIA.NS", "BPCL.NS", "INDUSINDBK.NS", "ADANIENT.NS", "ADANIPORTS.NS",
-    "DRREDDY.NS", "CIPLA.NS", "APOLLOHOSP.NS", "BRITANNIA.NS", "TATAMOTORS.NS",
-    "M&M.NS", "EICHERMOT.NS", "HEROMOTOCO.NS", "BAJAJ-AUTO.NS", "SHREECEM.NS",
-    "DIVISLAB.NS", "UPL.NS", "TECHM.NS", "ZOMATO.NS", "DLF.NS",
-    "GAIL.NS", "PNB.NS", "BANKBARODA.NS", "BHEL.NS", "IRCTC.NS",
+    "ASIANPAINT.NS", "SUNPHARMA.NS", "HDFC.NS", "SBIN.NS", "TITAN.NS"
     # US Stocks
-    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NFLX", "NVDA", "BABA", "PYPL",
-    "V", "JNJ", "PG", "HD", "DIS", "MA", "XOM", "PFE", "KO", "PEP",
-    "MRNA", "AMD", "INTC", "WMT", "CRM", "ADBE", "NKE", "COST", "ORCL", "BA",
-    "IBM", "GE", "F", "T", "GM", "CAT", "LMT", "MMM", "CVX", "CSCO"
+    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NFLX", "NVDA",  "PYPL",
+    "HD", "DIS", "MA", "CAT", "LMT"
 ]
 
 # ✅ Function to fetch real-time stock data with caching
