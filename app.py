@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_caching import Cache
 import yfinance as yf
 import pandas as pd
 import os
@@ -8,23 +7,15 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Configure cache
-app.config['CACHE_TYPE'] = 'SimpleCache'
-app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # Cache for 5 minutes
-cache = Cache(app)
-
-# ✅ List of 100 Stocks (Indian + US)
+# ✅ Updated List: 12 Indian + 12 US Stocks
 STOCKS = [
-    "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
-    "KOTAKBANK.NS", "HINDUNILVR.NS", "LT.NS", "BAJFINANCE.NS", "ITC.NS",
-    "ASIANPAINT.NS", "SUNPHARMA.NS", "HDFC.NS", "SBIN.NS", "TITAN.NS"
-    # US Stocks
-    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NFLX", "NVDA",  "PYPL",
-    "HD", "DIS", "MA", "CAT", "LMT"
+    "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS", "KOTAKBANK.NS",
+    "HINDUNILVR.NS", "LT.NS", "BAJFINANCE.NS", "ITC.NS", "ASIANPAINT.NS", "SUNPHARMA.NS",
+    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NFLX", "NVDA", "BABA", "PYPL",
+    "V", "JNJ"
 ]
 
-# ✅ Function to fetch real-time stock data with caching
-@cache.cached(timeout=300, key_prefix='stock_data')
+# ✅ Function to fetch stock data
 def fetch_stock_data(symbol):
     try:
         stock = yf.Ticker(symbol)
@@ -37,7 +28,6 @@ def fetch_stock_data(symbol):
         debt_equity = info.get('debtToEquity', 0) or 0
         country = "India" if ".NS" in symbol else "USA"
         
-        # ✅ Recommended buy price logic
         recommended_buy_price = current_price * 0.9  # 10% below current price
         
         data = {
@@ -56,7 +46,7 @@ def fetch_stock_data(symbol):
         print(f"Error fetching {symbol}: {e}")
         return None
 
-# ✅ Function to rank stocks based on various criteria
+# ✅ Function to rank stocks
 def rank_stocks():
     stock_data = [fetch_stock_data(symbol) for symbol in STOCKS]
     stock_data = [data for data in stock_data if data]
@@ -65,7 +55,6 @@ def rank_stocks():
     if df.empty:
         return [{"error": "No valid stock data fetched"}]
 
-    # ✅ Scoring Algorithm
     df['raw_score'] = (
         (df['roe'] * 0.3) +           # ROE weight: 30%
         (df['roce'] * 0.25) -         # ROCE weight: 25%
@@ -74,19 +63,14 @@ def rank_stocks():
         (df['book_value'] * 0.1)      # Book Value weight: 10%
     )
 
-    # ✅ Normalize scores to range [1, 10]
     min_score = df['raw_score'].min()
     max_score = df['raw_score'].max()
     df['score'] = 1 + ((df['raw_score'] - min_score) / (max_score - min_score)) * 9
-
-    # ✅ Sort by score (higher = better)
     df = df.sort_values('score', ascending=False)
 
-    # ✅ Convert to list of dicts
-    ranked_stocks = df.to_dict(orient='records')
-    return ranked_stocks
+    return df.to_dict(orient='records')
 
-# ✅ API endpoint to get ranked stocks
+# ✅ API endpoint
 @app.route('/stocks', methods=['GET'])
 def get_stocks():
     ranked_stocks = rank_stocks()
@@ -94,5 +78,5 @@ def get_stocks():
 
 # ✅ Port Binding for Render Deployment
 if __name__ == '__main__':
-    PORT = int(os.environ.get("PORT", 5000))  # Use Render's port
+    PORT = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=PORT, debug=True)
